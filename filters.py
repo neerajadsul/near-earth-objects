@@ -114,6 +114,18 @@ def create_filters(date=None, start_date=None, end_date=None,
     if distance_max is not None:
         fdistmax = DistanceFilter(operator.le, distance_max)
         filters.append(fdistmax)
+    if diameter_min is not None:
+        fdiamin = DiameterFilter(operator.ge, diameter_min)
+        filters.append(fdiamin)
+    if diameter_max is not None:
+        fdiamax = DiameterFilter(operator.le, diameter_max)
+        filters.append(fdiamax)
+    if velocity_min is not None:
+        fvelomin = VelocityFilter(operator.ge, velocity_min)
+        filters.append(fvelomin)
+    if velocity_max is not None:
+        fvelomax = VelocityFilter(operator.le, velocity_max)
+        filters.append(fvelomax)
     
     return tuple(filters)
 
@@ -126,6 +138,12 @@ class DiameterFilter(AttributeFilter):
     @classmethod
     def get(cls, approach):
         return approach.neo.diameter
+
+class VelocityFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.velocity
+
 
 def limit(iterator, n=None):
     """Produce a limited stream of values from an iterator.
