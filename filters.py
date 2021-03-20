@@ -107,8 +107,25 @@ def create_filters(date=None, start_date=None, end_date=None,
     :return: A collection of filters for use with `query`.
     """
     # TODO: Decide how you will represent your filters.
-    return ()
+    filters = []
+    if distance_min is not None:
+        fdistmin = DistanceFilter(operator.ge, distance_min)
+        filters.append(fdistmin)
+    if distance_max is not None:
+        fdistmax = DistanceFilter(operator.le, distance_max)
+        filters.append(fdistmax)
+    
+    return tuple(filters)
 
+class DistanceFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.distance
+
+class DiameterFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.diameter
 
 def limit(iterator, n=None):
     """Produce a limited stream of values from an iterator.
@@ -118,6 +135,20 @@ def limit(iterator, n=None):
     :param iterator: An iterator of values.
     :param n: The maximum number of values to produce.
     :yield: The first (at most) `n` values from the iterator.
-    """
+    """        
     # TODO: Produce at most `n` values from the given iterator.
-    return iterator
+    if n==0 or n is None:
+        return iterator    
+    
+    output = []
+    print(type(iterator))
+    # if  type(iterator) is not generator:
+    #     iterator = iter(iterator)
+    for n in range(n):
+        try:
+            output.append(next(iterator))
+        except StopIteration:
+            break        
+        except TypeError:
+            return iterator[:n]
+    return output
