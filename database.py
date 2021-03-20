@@ -42,9 +42,21 @@ class NEODatabase:
         self._approaches = approaches
 
         # TODO: What additional auxiliary data structures will be useful?
+        self._approaches_by_neos = {}
+        for appr in self._approaches:            
+            try:
+                self._approaches_by_neos[appr.designation].append(appr)
+            except KeyError:
+                self._approaches_by_neos[appr.designation] = [appr]    
 
         # TODO: Link together the NEOs and their close approaches.
-
+        for neo in self._neos:
+            try:
+                neo.approaches.append(
+                    self._approaches_by_neos[neo.designation]
+                )                
+            except KeyError:
+                continue
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
 
@@ -95,3 +107,14 @@ class NEODatabase:
         # TODO: Generate `CloseApproach` objects that match all of the filters.
         for approach in self._approaches:
             yield approach
+
+
+if __name__ == '__main__':
+    from extract import load_approaches, load_neos
+    neos = load_neos('data/neos.csv')    
+    approaches = load_approaches('data/cad.json')
+
+    neos_db = NEODatabase(neos, approaches)
+    for k,v in neos_db._approaches_by_neos.items():
+        if len(v) > 1:
+            print(k, len(v))

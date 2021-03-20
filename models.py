@@ -131,6 +131,9 @@ class CloseApproach:
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
                 f"velocity={self.velocity:.2f}, neo={self.neo!r})")
+    @property
+    def designation(self):
+        return self._designation
 
 
 if __name__ == '__main__':
