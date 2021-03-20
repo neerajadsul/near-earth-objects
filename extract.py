@@ -14,6 +14,8 @@ You'll edit this file in Task 2.
 """
 import csv
 import json
+import collections
+import keyword
 
 from models import NearEarthObject, CloseApproach
 
@@ -28,12 +30,13 @@ def load_neos(neo_csv_path):
     # TODO: Load NEO data from the given CSV file.
     with open(neo_csv_path,'r') as f:
         reader = csv.DictReader(f)
-        next(reader) #skip header      
+        # next(reader) #skip header      
         for entry in reader:
             neos_collection.append(
                 NearEarthObject(**entry)
             )
-    return tuple(neos_collection)
+    tp = tuple(neos_collection)
+    return tp
 
 
 def load_approaches(cad_json_path):
@@ -42,25 +45,31 @@ def load_approaches(cad_json_path):
     :param neo_csv_path: A path to a JSON file containing data about close approaches.
     :return: A collection of `CloseApproach`es.
     """
-    approaches_collection = []
+    
     # TODO: Load close approach data from the given JSON file.
     with open(cad_json_path,'r') as f:
         data = json.load(f)
     approaches = data['data'] 
     fields = data['fields']
+    for n,field in enumerate(fields):
+        if keyword.iskeyword(field):
+            fields[n] = 'n_' + field
+
+    # ApproachesEntry = collections.namedtuple('Approaches', field_names=fields)
+    # approaches_collection = map(ApproachesEntry._make, approaches)
+    approaches_collection = []
     for n, appr in enumerate(approaches):        
         approaches_collection.append(
             CloseApproach(**dict(zip(fields, appr)))
-        )
-        
-        if n>500:
-            break
+        )            
+        # if n>5:
+        #     break
     return tuple(approaches_collection)
 
 
 if __name__ == '__main__':
     neos = load_neos('data/neos.csv')
-    print(neos[1])    
+    print(neos[5]) 
     approaches = load_approaches('data/cad.json')
     print('\n', approaches[1])
     print('\n', approaches[2])

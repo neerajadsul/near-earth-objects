@@ -44,12 +44,12 @@ class NearEarthObject:
         # handle any edge cases, such as a empty name being represented by `None`
         # and a missing diameter being represented by `float('nan')`.
         self.designation = info['pdes']
-        self.name = None if len(info['name'])==0 or info['name'] else info['name']
+        self.name = None if len(info['name'])==0 or info['name'] is None else info['name']
         self.diameter = float('nan') if len(info['diameter'])==0 else float(info['diameter'])
-        self.hazardous = info['pha']
+        self.hazardous = True if info['pha'] == 'Y' else False
 
         # Create an empty initial collection of linked approaches.
-        self.approaches = []
+        self.approaches = list()
 
     @property
     def fullname(self):
@@ -140,8 +140,6 @@ if __name__ == '__main__':
     import csv, json
     with open('data/neos.csv','r') as f:
         reader = csv.DictReader(f)
-        next(reader) #skip header
-        data = next(reader)
         data = next(reader)
 
     neo = NearEarthObject(**data)

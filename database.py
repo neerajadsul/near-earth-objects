@@ -42,21 +42,29 @@ class NEODatabase:
         self._approaches = approaches
 
         # TODO: What additional auxiliary data structures will be useful?
-        self._approaches_by_neos = {}
-        for appr in self._approaches:            
-            try:
-                self._approaches_by_neos[appr.designation].append(appr)
-            except KeyError:
-                self._approaches_by_neos[appr.designation] = [appr]    
-
+        self._pdes_to_neos = {}
+        self._name_to_neos = {}
+        
         # TODO: Link together the NEOs and their close approaches.
         for neo in self._neos:
+            self._pdes_to_neos[neo.designation.strip()] = neo
+            if neo.name is not None:
+                self._name_to_neos[neo.name.strip().upper()] = neo
+                              
+        for appr in self._approaches:            
             try:
-                neo.approaches.append(
-                    self._approaches_by_neos[neo.designation]
-                )                
+                neo = self._pdes_to_neos[appr.designation]
+                neo.approaches.append(appr)
+                appr.neo = neo                
             except KeyError:
-                continue
+                print(f'NEO des={appr.designation} not found.')
+
+        with open('_pdes_to_neos.txt','w') as f:            
+            print(self._pdes_to_neos, file=f)
+        
+        with open('_name_to_neos.txt','w') as f:            
+            print(self._name_to_neos, file=f)    
+
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
 
@@ -71,6 +79,10 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired primary designation, or `None`.
         """
         # TODO: Fetch an NEO by its primary designation.
+        designation = designation.strip().upper()
+        # print(designation)
+        if designation in self._pdes_to_neos:
+            return self._pdes_to_neos[designation]
         return None
 
     def get_neo_by_name(self, name):
@@ -88,6 +100,13 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
         # TODO: Fetch an NEO by its name.
+        name = name.strip().upper()
+        if name is not None and len(name)>0:
+            try:
+                neo = self._name_to_neos[name]
+            except KeyError:
+                return None
+            return neo
         return None
 
     def query(self, filters=()):
@@ -115,6 +134,11 @@ if __name__ == '__main__':
     approaches = load_approaches('data/cad.json')
 
     neos_db = NEODatabase(neos, approaches)
-    for k,v in neos_db._approaches_by_neos.items():
-        if len(v) > 1:
-            print(k, len(v))
+
+    designation = '2020 AK3'
+    designation = '545274'
+    designation = '433'
+    print(f"pdes = {designation}\n", neos_db.get_neo_by_designation(designation))
+
+    name = 'Abhramu'
+    print(f"name = {name}\n", neos_db.get_neo_by_name(name))
