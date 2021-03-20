@@ -63,7 +63,7 @@ class NearEarthObject:
         # The project instructions include one possibility. Peek at the __repr__
         # method for examples of advanced string formatting.
         haz = '' if self.hazardous else 'not'
-        return f"A NEO {self.fullname} has a diameter {self.diameter} and is {haz}potentially hazardous."
+        return f"A NEO {self.fullname} has a diameter {self.diameter} and is {haz} potentially hazardous."
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
@@ -130,7 +130,7 @@ class CloseApproach:
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
         return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
-                f"velocity={self.velocity:.2f}, neo={self.neo!r})")
+                f"velocity={self.velocity:.2f}, neo={self.neo})")
     @property
     def designation(self):
         return self._designation
