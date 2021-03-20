@@ -126,6 +126,18 @@ def create_filters(date=None, start_date=None, end_date=None,
     if velocity_max is not None:
         fvelomax = VelocityFilter(operator.le, velocity_max)
         filters.append(fvelomax)
+    if date is not None:
+        fdate = DateFilter(operator.eq, date)
+        filters.append(fdate)
+    if start_date is not None:
+        fstartdate = DateFilter(operator.ge, start_date)
+        filters.append(fstartdate)
+    if end_date is not None:
+        fenddate = DateFilter(operator.le, end_date)
+        filters.append(fenddate)
+    if hazardous is not None:
+        fhazardous = HazardousFilter(operator.eq, hazardous)
+        filters.append(fhazardous)
     
     return tuple(filters)
 
@@ -144,6 +156,15 @@ class VelocityFilter(AttributeFilter):
     def get(cls, approach):
         return approach.velocity
 
+class HazardousFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.hazardous
+
+class DateFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.time.date()
 
 def limit(iterator, n=None):
     """Produce a limited stream of values from an iterator.
@@ -159,7 +180,7 @@ def limit(iterator, n=None):
         return iterator    
     
     output = []
-    print(type(iterator))
+    # print(type(iterator))
     # if  type(iterator) is not generator:
     #     iterator = iter(iterator)
     for n in range(n):

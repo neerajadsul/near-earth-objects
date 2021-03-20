@@ -18,6 +18,7 @@ quirks of the data set, such as missing names and unknown diameters.
 You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
+import datetime
 
 class NearEarthObject:
     """A near-Earth object (NEO).
@@ -99,7 +100,7 @@ class CloseApproach:
         self.time = cd_to_datetime(info['cd'])  # TODO: Use the cd_to_datetime function for this attribute.
         self.distance = round(float(info['dist']),4)
         self.velocity = round(float(info['v_rel']),4)
-
+        #print(self.time.date() < datetime.datetime(2020,3,20).date())
         # Create an attribute for the referenced NEO, originally None.
         self.neo = None
 
@@ -129,7 +130,7 @@ class CloseApproach:
 
     def __repr__(self):
         """Return `repr(self)`, a computer-readable string representation of this object."""
-        return (f"CloseApproach(time={self.time_str!r}, distance={self.distance:.2f}, "
+        return (f"CloseApproach(time={self.time_str}, distance={self.distance:.2f}, "
                 f"velocity={self.velocity:.2f}, neo={self.neo})")
     @property
     def designation(self):
