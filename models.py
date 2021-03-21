@@ -71,8 +71,8 @@ class NearEarthObject:
         return {
             'designation':self.designation, 
             'name' : '' if self.name is None else self.name, 
-            'diameter_km' : 'NaN' if math.isnan(self.diameter) else self.diameter, 
-            'potentially_hazardous' : str(self.hazardous).lower()
+            'diameter_km' : self.diameter,
+            'potentially_hazardous' : self.hazardous
         }
     
 
