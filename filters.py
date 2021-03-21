@@ -180,14 +180,14 @@ def limit(iterator, n=None):
         return iterator    
     
     output = []
-    # print(type(iterator))
-    # if  type(iterator) is not generator:
-    #     iterator = iter(iterator)
+    
+    if type(iterator) == tuple:
+        iterator = iter(iterator)
+
     for n in range(n):
         try:
             output.append(next(iterator))
         except StopIteration:
             break        
-        except TypeError:
-            return iterator[:n]
+        
     return output
