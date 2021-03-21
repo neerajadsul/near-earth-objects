@@ -18,7 +18,7 @@ quirks of the data set, such as missing names and unknown diameters.
 You'll edit this file in Task 1.
 """
 from helpers import cd_to_datetime, datetime_to_str
-import datetime
+import datetime, math
 
 class NearEarthObject:
     """A near-Earth object (NEO).
@@ -67,6 +67,14 @@ class NearEarthObject:
         return (f"NearEarthObject(designation={self.designation!r}, name={self.name!r}, "
                 f"diameter={self.diameter:.3f}, hazardous={self.hazardous!r})")
 
+    def serialize(self):
+        return {
+            'designation':self.designation, 
+            'name' : '' if self.name is None else self.name, 
+            'diameter_km' : 'NaN' if math.isnan(self.diameter) else self.diameter, 
+            'potentially_hazardous' : str(self.hazardous).lower()
+        }
+    
 
 class CloseApproach:
     """A close approach to Earth by an NEO.
@@ -129,6 +137,13 @@ class CloseApproach:
     @property
     def designation(self):
         return self._designation
+
+    def serialize(self):
+        return {
+            'datetime_utc' : self.time_str , 
+            'distance_au' : self.distance, 
+            'velocity_km_s' : self.velocity
+        }
 
 
 if __name__ == '__main__':
