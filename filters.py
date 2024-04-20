@@ -106,9 +106,64 @@ def create_filters(date=None, start_date=None, end_date=None,
     :param hazardous: Whether the NEO of a matching `CloseApproach` is potentially hazardous.
     :return: A collection of filters for use with `query`.
     """
-    # TODO: Decide how you will represent your filters.
-    return ()
+    filters = []
+    if distance_min is not None:
+        fdistmin = DistanceFilter(operator.ge, distance_min)
+        filters.append(fdistmin)
+    if distance_max is not None:
+        fdistmax = DistanceFilter(operator.le, distance_max)
+        filters.append(fdistmax)
+    if diameter_min is not None:
+        fdiamin = DiameterFilter(operator.ge, diameter_min)
+        filters.append(fdiamin)
+    if diameter_max is not None:
+        fdiamax = DiameterFilter(operator.le, diameter_max)
+        filters.append(fdiamax)
+    if velocity_min is not None:
+        fvelomin = VelocityFilter(operator.ge, velocity_min)
+        filters.append(fvelomin)
+    if velocity_max is not None:
+        fvelomax = VelocityFilter(operator.le, velocity_max)
+        filters.append(fvelomax)
+    if date is not None:
+        fdate = DateFilter(operator.eq, date)
+        filters.append(fdate)
+    if start_date is not None:
+        fstartdate = DateFilter(operator.ge, start_date)
+        filters.append(fstartdate)
+    if end_date is not None:
+        fenddate = DateFilter(operator.le, end_date)
+        filters.append(fenddate)
+    if hazardous is not None:
+        fhazardous = HazardousFilter(operator.eq, hazardous)
+        filters.append(fhazardous)
+    
+    return tuple(filters)
 
+class DistanceFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.distance
+
+class DiameterFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.diameter
+
+class VelocityFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.velocity
+
+class HazardousFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.neo.hazardous
+
+class DateFilter(AttributeFilter):
+    @classmethod
+    def get(cls, approach):
+        return approach.time.date()
 
 def limit(iterator, n=None):
     """Produce a limited stream of values from an iterator.
@@ -118,6 +173,19 @@ def limit(iterator, n=None):
     :param iterator: An iterator of values.
     :param n: The maximum number of values to produce.
     :yield: The first (at most) `n` values from the iterator.
-    """
-    # TODO: Produce at most `n` values from the given iterator.
-    return iterator
+    """        
+    if n==0 or n is None:
+        return iterator    
+    
+    output = []
+    
+    if type(iterator) == tuple:
+        iterator = iter(iterator)
+
+    for n in range(n):
+        try:
+            output.append(next(iterator))
+        except StopIteration:
+            break        
+        
+    return output
